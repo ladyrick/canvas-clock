@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    #box {
+        position:relative;
+        width:400px;height:400px;
+        margin: 0 auto;
+    }
+    .circle1 {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: -198px;
+        margin-top: -198px;
+        width:390px;
+        height:390px;
+        background-color:aliceblue;
+        border-radius: 400px;
+        border-color: aqua;
+        border-width: 3px;
+        border-style: dotted;
+    }
+    .circle2 {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: -182px;
+        margin-top: -182px;
+        width:350px;
+        height:350px;
+        background-color: white;
+        border-radius: 400px;
+        border-color: mediumturquoise;
+        border-width: 7px;
+        border-style: solid;
+    }
+    #mycanvas {
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        transition: 0.2s;
+        z-index:5;
+    }
+</style>        
+</head>
+<body>
+    <div id="box">
+        <div class="circle1"></div>
+        <div class="circle2"></div>
+        <canvas id="mycanvas" width="400" height="400">don't support canvas</canvas>
+    </div>
+    <script>
+        Rad = 36;
+        var sTicks = 60;
+        var mTicks = 60;
+        var hTicks = 12;
+
+        var _sPos = 0;
+        var _mPos = 0;
+        var _hPos = 0;
+
+        var canvas = document.getElementById("mycanvas");
+        var canvasHeight = 400;
+        var canvasWidth = 400;
+
+        var ctx = canvas.getContext('2d');
+
+        function tick(during, frames, mode)
+        {
+            if (mode === 'clock'){
+                var date = new Date();
+                var sPos = date.getSeconds()%sTicks;
+                var mPos = date.getMinutes()%mTicks;
+                var hPos = date.getHours()%hTicks;
+            }
+            else{
+                var sPos = _sPos + 1;
+                var mPos = _mPos;
+                var hPos = _hPos;
+                if (sPos === sTicks){
+                    sPos = 0;
+                    mPos = _mPos + 1;
+                    if (mPos === mTicks){
+                        mPos = 0;
+                        hPos = _hPos + 1;
+                        if (hPos === hTicks)
+                            hPos = 0;
+                    }
+                }
+            }
+            
+            if (sPos === 0 && _sPos === sTicks-1) sPos = sTicks;
+            if (mPos === 0 && _mPos === mTicks-1) mPos = mTicks;
+            if (hPos === 0 && _hPos === hTicks-1) mPos = hTicks;
+
+            var frameIndex = 0;
+
+            function createCircle(ctx, left, top, rad, color, border){
+                ctx.beginPath();
+                ctx.arc(left, top, rad+border, 0, Math.PI*2);
+                ctx.closePath();
+                ctx.fillStyle="white";
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(left, top, rad, 0, Math.PI*2);
+                ctx.closePath();
+                ctx.fillStyle=color;
+                ctx.fill();
+            }
+
+            function drawFrame(){
+                var cursPos = _sPos+(sPos-_sPos)/frames*frameIndex;
+                var es_left = 50+Math.sin(cursPos*2*Math.PI/sTicks)*Rad;
+                var es_top = 50-Math.cos(cursPos*2*Math.PI/sTicks)*Rad
+
+                var curmPos = _mPos+(mPos-_mPos)/frames*frameIndex;
+                var em_left = 50+Math.sin(curmPos*2*Math.PI/mTicks)*Rad;
+                var em_top = 50-Math.cos(curmPos*2*Math.PI/mTicks)*Rad;
+
+                var curhPos = _hPos+(hPos-_hPos)/frames*frameIndex;
+                var eh_left = 50+Math.sin(curhPos*2*Math.PI/hTicks)*Rad;
+                var eh_top = 50-Math.cos(curhPos*2*Math.PI/hTicks)*Rad;
+
+
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+
+                ctx.beginPath();
+                ctx.moveTo(es_left*canvasWidth/100,es_top*canvasHeight/100);
+                ctx.lineTo(em_left*canvasWidth/100,em_top*canvasHeight/100);
+                ctx.lineTo(eh_left*canvasWidth/100,eh_top*canvasHeight/100);
+                ctx.closePath();
+                ctx.fillStyle="#000000";
+                ctx.fill();
+
+                createCircle(ctx, eh_left*canvasWidth/100,eh_top*canvasHeight/100,18,'red',3);
+                createCircle(ctx, em_left*canvasWidth/100,em_top*canvasHeight/100,12,'green',3);
+                createCircle(ctx, es_left*canvasWidth/100,es_top*canvasHeight/100,6,'blue',3);
+            }
+
+            function tickFrame(){
+                if (frameIndex > 0)
+                    drawFrame();
+                frameIndex++;
+                
+                if (frameIndex <= frames)
+                    setTimeout(tickFrame,during/frames*1000);
+                else{
+                    _sPos = sPos%sTicks;
+                    _mPos = mPos%mTicks;
+                    _hPos = hPos%hTicks;
+                }
+            }
+            tickFrame();
+        }
+
+        tick();
+        setInterval("tick(0.3,10,'clock')",1000);
+    </script>
+</body>
+</html>
