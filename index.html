@@ -1,33 +1,38 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<style>
-    #box {
-        position:relative;
-        width:400px;height:400px;
-        margin: 0 auto;
-    }
-    .circle1 {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        margin-left: -198px;
-        margin-top: -198px;
-        width:390px;
-        height:390px;
-        background-color:aliceblue;
-        border-radius: 400px;
-        border-color: aqua;
-        border-width: 3px;
-        border-style: dotted;
-    }
-    .mycanvas {
-        position: absolute;
-        width: 400px;
-        height: 400px;
-    }
-</style>        
+    <style>
+        #box {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+        }
+        
+        .circle1 {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -198px;
+            margin-top: -198px;
+            width: 390px;
+            height: 390px;
+            background-color: aliceblue;
+            border-radius: 400px;
+            border-color: aqua;
+            border-width: 3px;
+            border-style: dotted;
+        }
+        
+        .mycanvas {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+        }
+    </style>
 </head>
+
 <body>
     <div id="box">
         <div class="circle1"></div>
@@ -35,7 +40,8 @@
         <canvas class="mycanvas" width="400" height="400">don't support canvas</canvas>
     </div>
     <script>
-        Rad = 38;
+        'use strict';
+        var Rad = 38;
         var sTicks = 60;
         var mTicks = 60;
         var hTicks = 12;
@@ -52,122 +58,151 @@
 
         //inner circle
         ctx.beginPath();
-        ctx.arc(canvasBorder/2, canvasBorder/2, canvasBorder*innerCircleOutRad/100, 0, Math.PI*2);
+        ctx.arc(canvasBorder / 2, canvasBorder / 2, canvasBorder * innerCircleOutRad / 100, 0, Math.PI * 2);
         ctx.closePath();
-        ctx.fillStyle="mediumturquoise";
+        ctx.fillStyle = "mediumturquoise";
         ctx.fill();
         ctx.beginPath();
-        ctx.arc(canvasBorder/2, canvasBorder/2, canvasBorder*innerCircleInRad/100, 0, Math.PI*2);
+        ctx.arc(canvasBorder / 2, canvasBorder / 2, canvasBorder * innerCircleInRad / 100, 0, Math.PI * 2);
         ctx.closePath();
-        ctx.fillStyle="white";
+        ctx.fillStyle = "white";
         ctx.fill();
 
-        ctx.strokeStyle="mediumturquoise";
-        ctx.lineWidth=5;
-        for (var i = 0; i < hTicks; i++){
-            var markEnd1Left = 50+Math.sin(i*2*Math.PI/hTicks)*(innerCircleInRad+1);
-            var markEnd1Top = 50-Math.cos(i*2*Math.PI/hTicks)*(innerCircleInRad+1);
-            var markEnd2Left = 50+Math.sin(i*2*Math.PI/hTicks)*(innerCircleInRad-markLength);
-            var markEnd2Top = 50-Math.cos(i*2*Math.PI/hTicks)*(innerCircleInRad-markLength);
+        ctx.strokeStyle = "mediumturquoise";
+        ctx.lineWidth = 5;
+        for (var i = 0; i < hTicks; i++) {
+            var markEnd1Left = 50 + Math.sin(i * 2 * Math.PI / hTicks) * (innerCircleInRad + 1);
+            var markEnd1Top = 50 - Math.cos(i * 2 * Math.PI / hTicks) * (innerCircleInRad + 1);
+            var markEnd2Left = 50 + Math.sin(i * 2 * Math.PI / hTicks) * (innerCircleInRad - markLength);
+            var markEnd2Top = 50 - Math.cos(i * 2 * Math.PI / hTicks) * (innerCircleInRad - markLength);
             ctx.beginPath();
-            ctx.moveTo(canvasBorder*markEnd1Left/100,canvasBorder*markEnd1Top/100);
-            ctx.lineTo(canvasBorder*markEnd2Left/100,canvasBorder*markEnd2Top/100);
+            ctx.moveTo(canvasBorder * markEnd1Left / 100, canvasBorder * markEnd1Top / 100);
+            ctx.lineTo(canvasBorder * markEnd2Left / 100, canvasBorder * markEnd2Top / 100);
             ctx.closePath();
             ctx.stroke();
         }
 
         var ctx = document.getElementsByClassName("mycanvas")[1].getContext('2d');
-        function tick(during, frames, mode)
-        {
-            if (mode === 'clock'){
+
+        var transFun1 = function (x) { return 1 / (1 + x * x); }
+        var transFun2 = function (x) { return 3 - Math.abs(x); }
+        var transFun3 = function (x) { return 1; }
+        var transFuns = [transFun1, transFun2, transFun3];
+
+        function tick(during, frames, mode,transMode) {
+            //default arguments
+            during = during||0.3;
+            frames = frames||30;
+            mode = mode||'clock';
+            transMode = transMode||0;
+
+            if (mode === 'clock') {
                 var date = new Date();
-                var sPos = date.getSeconds()%sTicks;
-                var mPos = date.getMinutes()%mTicks;
-                var hPos = date.getHours()%hTicks;
-            }
-            else{
+                var sPos = date.getSeconds() % sTicks;
+                var mPos = date.getMinutes() % mTicks;
+                var hPos = date.getHours() % hTicks;
+            } else {
                 var sPos = _sPos + 1;
                 var mPos = _mPos;
                 var hPos = _hPos;
-                if (sPos === sTicks){
+                if (sPos === sTicks) {
                     sPos = 0;
                     mPos = _mPos + 1;
-                    if (mPos === mTicks){
+                    if (mPos === mTicks) {
                         mPos = 0;
                         hPos = _hPos + 1;
-                        if (hPos === hTicks)
+                        if (hPos === hTicks) {
                             hPos = 0;
+                        }
                     }
                 }
             }
-            
-            if (sPos === 0 && _sPos === sTicks-1) sPos = sTicks;
-            if (mPos === 0 && _mPos === mTicks-1) mPos = mTicks;
-            if (hPos === 0 && _hPos === hTicks-1) mPos = hTicks;
+
+            if (sPos === 0 && _sPos === sTicks - 1) sPos = sTicks;
+            if (mPos === 0 && _mPos === mTicks - 1) mPos = mTicks;
+            if (hPos === 0 && _hPos === hTicks - 1) mPos = hTicks;
 
             var frameIndex = 0;
 
-            function createCircle(ctx, left, top, rad, color, border){
+            function createCircle(ctx, left, top, rad, color, border) {
                 ctx.beginPath();
-                ctx.arc(left, top, rad+border, 0, Math.PI*2);
+                ctx.arc(left, top, rad + border, 0, Math.PI * 2);
                 ctx.closePath();
-                ctx.fillStyle="white";
+                ctx.fillStyle = "white";
                 ctx.fill();
 
                 ctx.beginPath();
-                ctx.arc(left, top, rad, 0, Math.PI*2);
+                ctx.arc(left, top, rad, 0, Math.PI * 2);
                 ctx.closePath();
-                ctx.fillStyle=color;
+                ctx.fillStyle = color;
                 ctx.fill();
             }
 
-            function drawFrame(){
-                var cursPos = _sPos+(sPos-_sPos)/frames*frameIndex;
-                var es_left = 50+Math.sin(cursPos*2*Math.PI/sTicks)*Rad;
-                var es_top = 50-Math.cos(cursPos*2*Math.PI/sTicks)*Rad
+            var transShape = [];
+            console.assert(frames > 0, "frames should be at least 1.");
+            if (frames === 1) {
+                transShape = [1];
+            } else {
+                for (var i = 0; i < frames; i++) {
+                    transShape.push(transFuns[transMode](-3 + 6 * i / (frames - 1)));
+                }
+            }
+            var sum = 0;
+            var transUp = [];
+            transShape.forEach(function (x) {
+                sum += x;
+                transUp.push(sum);
+            });
+            function drawFrame() {
+                var cursPos = _sPos + (sPos - _sPos) * transUp[frameIndex] / transUp[frames - 1];
+                var es_left = 50 + Math.sin(cursPos * 2 * Math.PI / sTicks) * Rad;
+                var es_top = 50 - Math.cos(cursPos * 2 * Math.PI / sTicks) * Rad
 
-                var curmPos = _mPos+(mPos-_mPos)/frames*frameIndex;
-                var em_left = 50+Math.sin(curmPos*2*Math.PI/mTicks)*Rad;
-                var em_top = 50-Math.cos(curmPos*2*Math.PI/mTicks)*Rad;
+                var curmPos = _mPos + (mPos - _mPos) * transUp[frameIndex] / transUp[frames - 1];
+                var em_left = 50 + Math.sin(curmPos * 2 * Math.PI / mTicks) * Rad;
+                var em_top = 50 - Math.cos(curmPos * 2 * Math.PI / mTicks) * Rad;
 
-                var curhPos = _hPos+(hPos-_hPos)/frames*frameIndex;
-                var eh_left = 50+Math.sin(curhPos*2*Math.PI/hTicks)*Rad;
-                var eh_top = 50-Math.cos(curhPos*2*Math.PI/hTicks)*Rad;
+                var curhPos = _hPos + (hPos - _hPos) * transUp[frameIndex] / transUp[frames - 1];
+                var eh_left = 50 + Math.sin(curhPos * 2 * Math.PI / hTicks) * Rad;
+                var eh_top = 50 - Math.cos(curhPos * 2 * Math.PI / hTicks) * Rad;
 
 
-                ctx.clearRect(0,0,canvasBorder,canvasBorder);
+                ctx.clearRect(0, 0, canvasBorder, canvasBorder);
 
                 ctx.beginPath();
-                ctx.moveTo(es_left*canvasBorder/100,es_top*canvasBorder/100);
-                ctx.lineTo(em_left*canvasBorder/100,em_top*canvasBorder/100);
-                ctx.lineTo(eh_left*canvasBorder/100,eh_top*canvasBorder/100);
+                ctx.moveTo(es_left * canvasBorder / 100, es_top * canvasBorder / 100);
+                ctx.lineTo(em_left * canvasBorder / 100, em_top * canvasBorder / 100);
+                ctx.lineTo(eh_left * canvasBorder / 100, eh_top * canvasBorder / 100);
                 ctx.closePath();
-                ctx.fillStyle="#000000";
+                ctx.fillStyle = "#000000";
                 ctx.fill();
 
-                createCircle(ctx, eh_left*canvasBorder/100,eh_top*canvasBorder/100,18,'red',3);
-                createCircle(ctx, em_left*canvasBorder/100,em_top*canvasBorder/100,12,'green',3);
-                createCircle(ctx, es_left*canvasBorder/100,es_top*canvasBorder/100,6,'blue',3);
+                createCircle(ctx, eh_left * canvasBorder / 100, eh_top * canvasBorder / 100, 18, 'red', 3);
+                createCircle(ctx, em_left * canvasBorder / 100, em_top * canvasBorder / 100, 12, 'green', 3);
+                createCircle(ctx, es_left * canvasBorder / 100, es_top * canvasBorder / 100, 6, 'blue', 3);
             }
 
-            function tickFrame(){
-                if (frameIndex > 0)
-                    drawFrame();
+            function tickFrame() {
+                drawFrame();
                 frameIndex++;
-                
-                if (frameIndex <= frames)
-                    setTimeout(tickFrame,during/frames*1000);
-                else{
-                    _sPos = sPos%sTicks;
-                    _mPos = mPos%mTicks;
-                    _hPos = hPos%hTicks;
+
+                if (frameIndex < frames) {
+                    setTimeout(tickFrame, during / frames * 1000);
+                } else {
+                    _sPos = sPos % sTicks;
+                    _mPos = mPos % mTicks;
+                    _hPos = hPos % hTicks;
                 }
             }
             tickFrame();
         }
 
-        tick();
-        setInterval("tick(0.3,10,'clock')",1000);
+        function timeInterval() {
+            tick(0.5, 30, 'clock');
+        }
+        timeInterval();
+        setInterval(timeInterval, 1000);
     </script>
 </body>
+
 </html>
