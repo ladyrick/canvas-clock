@@ -42,8 +42,8 @@
     <script>
         'use strict';
         var Rad = 38;
-        var sTicks = 60;
-        var mTicks = 60;
+        var sTicks = 10;
+        var mTicks = 10;
         var hTicks = 12;
 
         var _sPos = 0;
@@ -89,12 +89,18 @@
         var transFun3 = function (x) { return 1; }
         var transFuns = [transFun1, transFun2, transFun3];
 
-        function tick(during, frames, mode,transMode) {
+
+
+
+        function tick(during, frames, mode, transMode) {
             //default arguments
-            during = during||0.3;
-            frames = frames||30;
-            mode = mode||'clock';
-            transMode = transMode||0;
+            if(during === undefined) during = 0.5;
+            if(frames === undefined) frames = 30;
+            if(mode === undefined) mode = 'clock';
+            if(transMode === undefined) transMode = 0;
+            if (frames < 1) frames = 1;
+            transMode = transMode % 3;
+
 
             if (mode === 'clock') {
                 var date = new Date();
@@ -129,12 +135,14 @@
                 ctx.arc(left, top, rad + border, 0, Math.PI * 2);
                 ctx.closePath();
                 ctx.fillStyle = "white";
+                ctx.globalCompositeOperation = "source-over";
                 ctx.fill();
 
                 ctx.beginPath();
                 ctx.arc(left, top, rad, 0, Math.PI * 2);
                 ctx.closePath();
                 ctx.fillStyle = color;
+                ctx.globalCompositeOperation = "source-over";
                 ctx.fill();
             }
 
@@ -169,13 +177,21 @@
 
                 ctx.clearRect(0, 0, canvasBorder, canvasBorder);
 
+                //print the current time
+                ctx.font = "normal normal bolder 60px/60px Arial";
+                ctx.textAlign = "center";
+                ctx.fillStyle = "black";
+                ctx.fillText((new Date()).toTimeString().substring(0, 8), canvasBorder / 2, canvasBorder / 2 + 20);
+
                 ctx.beginPath();
                 ctx.moveTo(es_left * canvasBorder / 100, es_top * canvasBorder / 100);
                 ctx.lineTo(em_left * canvasBorder / 100, em_top * canvasBorder / 100);
                 ctx.lineTo(eh_left * canvasBorder / 100, eh_top * canvasBorder / 100);
                 ctx.closePath();
                 ctx.fillStyle = "#000000";
+                ctx.globalCompositeOperation = "xor";
                 ctx.fill();
+
 
                 createCircle(ctx, eh_left * canvasBorder / 100, eh_top * canvasBorder / 100, 18, 'red', 3);
                 createCircle(ctx, em_left * canvasBorder / 100, em_top * canvasBorder / 100, 12, 'green', 3);
@@ -198,7 +214,7 @@
         }
 
         function timeInterval() {
-            tick(0.5, 30, 'clock');
+            tick(0.5, 30, 'clock', 0);
         }
         timeInterval();
         setInterval(timeInterval, 1000);
