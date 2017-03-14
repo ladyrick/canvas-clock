@@ -21,37 +21,21 @@
         border-width: 3px;
         border-style: dotted;
     }
-    .circle2 {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        margin-left: -182px;
-        margin-top: -182px;
-        width:350px;
-        height:350px;
-        background-color: white;
-        border-radius: 400px;
-        border-color: mediumturquoise;
-        border-width: 7px;
-        border-style: solid;
-    }
-    #mycanvas {
+    .mycanvas {
         position: absolute;
         width: 400px;
         height: 400px;
-        transition: 0.2s;
-        z-index:5;
     }
 </style>        
 </head>
 <body>
     <div id="box">
         <div class="circle1"></div>
-        <div class="circle2"></div>
-        <canvas id="mycanvas" width="400" height="400">don't support canvas</canvas>
+        <canvas class="mycanvas" width="400" height="400">don't support canvas</canvas>
+        <canvas class="mycanvas" width="400" height="400">don't support canvas</canvas>
     </div>
     <script>
-        Rad = 36;
+        Rad = 38;
         var sTicks = 60;
         var mTicks = 60;
         var hTicks = 12;
@@ -60,12 +44,39 @@
         var _mPos = 0;
         var _hPos = 0;
 
-        var canvas = document.getElementById("mycanvas");
-        var canvasHeight = 400;
-        var canvasWidth = 400;
+        var ctx = document.getElementsByClassName("mycanvas")[0].getContext('2d');
+        var canvasBorder = 400;
+        var innerCircleInRad = 45;
+        var innerCircleOutRad = 47;
+        var markLength = 2;
 
-        var ctx = canvas.getContext('2d');
+        //inner circle
+        ctx.beginPath();
+        ctx.arc(canvasBorder/2, canvasBorder/2, canvasBorder*innerCircleOutRad/100, 0, Math.PI*2);
+        ctx.closePath();
+        ctx.fillStyle="mediumturquoise";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(canvasBorder/2, canvasBorder/2, canvasBorder*innerCircleInRad/100, 0, Math.PI*2);
+        ctx.closePath();
+        ctx.fillStyle="white";
+        ctx.fill();
 
+        ctx.strokeStyle="mediumturquoise";
+        ctx.lineWidth=5;
+        for (var i = 0; i < hTicks; i++){
+            var markEnd1Left = 50+Math.sin(i*2*Math.PI/hTicks)*(innerCircleInRad+1);
+            var markEnd1Top = 50-Math.cos(i*2*Math.PI/hTicks)*(innerCircleInRad+1);
+            var markEnd2Left = 50+Math.sin(i*2*Math.PI/hTicks)*(innerCircleInRad-markLength);
+            var markEnd2Top = 50-Math.cos(i*2*Math.PI/hTicks)*(innerCircleInRad-markLength);
+            ctx.beginPath();
+            ctx.moveTo(canvasBorder*markEnd1Left/100,canvasBorder*markEnd1Top/100);
+            ctx.lineTo(canvasBorder*markEnd2Left/100,canvasBorder*markEnd2Top/100);
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+        var ctx = document.getElementsByClassName("mycanvas")[1].getContext('2d');
         function tick(during, frames, mode)
         {
             if (mode === 'clock'){
@@ -124,19 +135,19 @@
                 var eh_top = 50-Math.cos(curhPos*2*Math.PI/hTicks)*Rad;
 
 
-                ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.clearRect(0,0,canvasBorder,canvasBorder);
 
                 ctx.beginPath();
-                ctx.moveTo(es_left*canvasWidth/100,es_top*canvasHeight/100);
-                ctx.lineTo(em_left*canvasWidth/100,em_top*canvasHeight/100);
-                ctx.lineTo(eh_left*canvasWidth/100,eh_top*canvasHeight/100);
+                ctx.moveTo(es_left*canvasBorder/100,es_top*canvasBorder/100);
+                ctx.lineTo(em_left*canvasBorder/100,em_top*canvasBorder/100);
+                ctx.lineTo(eh_left*canvasBorder/100,eh_top*canvasBorder/100);
                 ctx.closePath();
                 ctx.fillStyle="#000000";
                 ctx.fill();
 
-                createCircle(ctx, eh_left*canvasWidth/100,eh_top*canvasHeight/100,18,'red',3);
-                createCircle(ctx, em_left*canvasWidth/100,em_top*canvasHeight/100,12,'green',3);
-                createCircle(ctx, es_left*canvasWidth/100,es_top*canvasHeight/100,6,'blue',3);
+                createCircle(ctx, eh_left*canvasBorder/100,eh_top*canvasBorder/100,18,'red',3);
+                createCircle(ctx, em_left*canvasBorder/100,em_top*canvasBorder/100,12,'green',3);
+                createCircle(ctx, es_left*canvasBorder/100,es_top*canvasBorder/100,6,'blue',3);
             }
 
             function tickFrame(){
