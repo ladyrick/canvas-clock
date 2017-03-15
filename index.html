@@ -169,6 +169,8 @@
                 sum += x;
                 transUp.push(sum);
             });
+
+            var timeString = (new Date()).toTimeString().substring(0, 8);
             function drawFrame() {
                 var cursPos = _sPos + (sPos - _sPos) * transUp[frameIndex] / transUp[frames - 1];
                 var es_left = 50 + Math.sin(cursPos * 2 * Math.PI / sTicks) * Rad;
@@ -189,7 +191,7 @@
                 ctx.font = "normal normal bolder 60px/60px Arial";
                 ctx.textAlign = "center";
                 ctx.fillStyle = "white";
-                ctx.fillText((new Date()).toTimeString().substring(0, 8), canvasBorder / 2, canvasBorder / 2 + 20);
+                ctx.fillText(timeString, canvasBorder / 2, canvasBorder / 2 + 20);
 
                 ctx.beginPath();
                 ctx.moveTo(es_left * canvasBorder / 100, es_top * canvasBorder / 100);
