@@ -3,6 +3,9 @@
 
 <head>
     <style>
+        body {
+            background-color: #1E1E1E;
+        }
         #box {
             position: fixed;
             left:50%;
@@ -15,7 +18,7 @@
             margin-top:-200px;
         }
         
-        .circle1 {
+        .circle {
             position: absolute;
             left: 50%;
             top: 50%;
@@ -23,9 +26,9 @@
             margin-top: -198px;
             width: 390px;
             height: 390px;
-            background-color: aliceblue;
+            background-color: #1E1E1E;
             border-radius: 400px;
-            border-color: aqua;
+            border-color: white;
             border-width: 3px;
             border-style: dotted;
         }
@@ -40,7 +43,7 @@
 
 <body>
     <div id="box">
-        <div class="circle1"></div>
+        <div class="circle"></div>
         <canvas class="mycanvas" width="400" height="400">don't support canvas</canvas>
         <canvas class="mycanvas" width="400" height="400">don't support canvas</canvas>
     </div>
@@ -65,15 +68,15 @@
         ctx.beginPath();
         ctx.arc(canvasBorder / 2, canvasBorder / 2, canvasBorder * innerCircleOutRad / 100, 0, Math.PI * 2);
         ctx.closePath();
-        ctx.fillStyle = "mediumturquoise";
+        ctx.fillStyle = "#A1A1A1";
         ctx.fill();
         ctx.beginPath();
         ctx.arc(canvasBorder / 2, canvasBorder / 2, canvasBorder * innerCircleInRad / 100, 0, Math.PI * 2);
         ctx.closePath();
-        ctx.fillStyle = "white";
+        ctx.fillStyle = "#1E1E1E";
         ctx.fill();
 
-        ctx.strokeStyle = "mediumturquoise";
+        ctx.strokeStyle = "#A1A1A1";
         ctx.lineWidth = 5;
         for (var i = 0; i < hTicks; i++) {
             var markEnd1Left = 50 + Math.sin(i * 2 * Math.PI / hTicks) * (innerCircleInRad + 1);
@@ -185,7 +188,7 @@
                 //print the current time
                 ctx.font = "normal normal bolder 60px/60px Arial";
                 ctx.textAlign = "center";
-                ctx.fillStyle = "black";
+                ctx.fillStyle = "white";
                 ctx.fillText((new Date()).toTimeString().substring(0, 8), canvasBorder / 2, canvasBorder / 2 + 20);
 
                 ctx.beginPath();
@@ -193,7 +196,7 @@
                 ctx.lineTo(em_left * canvasBorder / 100, em_top * canvasBorder / 100);
                 ctx.lineTo(eh_left * canvasBorder / 100, eh_top * canvasBorder / 100);
                 ctx.closePath();
-                ctx.fillStyle = "#000000";
+                ctx.fillStyle = "#white";
                 ctx.globalCompositeOperation = "xor";
                 ctx.fill();
 
